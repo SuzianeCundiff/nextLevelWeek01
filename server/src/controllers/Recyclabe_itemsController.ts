@@ -18,7 +18,7 @@ class Recyclable_itemsController{
             return {
                 id: item.id,
                 title: item.title,
-                image_url: `ttp://localhost:3333/uploads/${item.image}`, // here must be used this grave accent.
+                image_url: `http://localhost:3333/uploads/${item.image}`, // here must be used this grave accent.
             };
         });
     

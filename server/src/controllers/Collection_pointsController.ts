@@ -21,10 +21,9 @@ class Collection_pointsController{
         if the second receives an error in the insertion,
         it'ss important that the first query stops executing. (http://knexjs.org/#Transactions) */
         //--------------------------------------------------------------------------
-
-        // trx is the default name of the 'transaction' variable, accepted by the community.
-        const trx = await knex.transaction();
         
+        const trx = await knex.transaction(); // trx is the default name of the 'transaction' variable, accepted by the community.
+
         const point = {
             image: 'https://images.unsplash.com/photo-1503596476-1c12a8ba09a9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
             name,
@@ -40,12 +39,25 @@ class Collection_pointsController{
 
         const point_id = insertedIds[0];
 
-        const pointsItems = recyclableItems.map( (item_id: number) => {
+        const pointsItems = recyclableItems.map((item_id: number) => {
             return {
                 item_id,
                 point_id
             };
         });
+
+        /*        
+        try {
+                await trx('points_items')
+                .insert(pointsItems)
+        
+                await trx.commit();
+            } catch (error) {
+                await trx.rollback();
+        
+                return response.status(400).json({ message: 'Falha na inserção na tabela points_items, verifique se os items informados são válidos' })
+            }
+        */        
 
         await trx('points_items').insert(pointsItems);
 
@@ -53,11 +65,13 @@ class Collection_pointsController{
 
         //--------------------------------------------------------------------------
 
+
         return response.json({
             id: point_id,
             ...point
         });
     }
+
 
     async index(request: Request, response: Response){
         const { city, uf, recyclableItems } = request.query;
@@ -77,9 +91,10 @@ class Collection_pointsController{
             .distinct()
             .select('collection_points.*');
         
-        return response.json({ points });
+        return response.json(points);
 
     }
+
 
     async show(request: Request, response: Response){
         const { id } = request.params; // is the same as 'const id = request.params.id;'
